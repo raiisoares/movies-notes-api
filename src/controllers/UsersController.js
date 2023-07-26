@@ -8,7 +8,7 @@ class UsersController {
 
         const { name, email, password } = request.body;
         const checkUserExiste = await knex.where({ "email": email }).table("users");
-        if (checkUserExiste == email) throw new AppError("Este email já está em uso.");
+        if (checkUserExiste === email) throw new AppError("Este email já está em uso.");
         const hashedPassword = await hash(password, 8);
 
         await knex.insert({ name, email, password: hashedPassword }).into("users");
@@ -19,8 +19,8 @@ class UsersController {
     async update(request, response) {
 
         const { name, email, password, old_password } = request.body;
-        const { id } = request.params;
-        const [user] = await knex("users").where({ id });
+        const user_id = request.user.id;
+        const [user] = await knex("users").where({ "id": user_id });
         if (!user) throw new AppError("Usuário não encontrado.");
         const [userUpdatedEmail] = await knex("users").where({ "email": email });
         if (userUpdatedEmail && userUpdatedEmail.id !== user.id) throw new AppError("Este email já está em uso");
@@ -35,14 +35,14 @@ class UsersController {
         user.name = name ?? user.name;
         user.email = email ?? user.email;
 
-        await knex("users").update({ name: user.name, email: user.email, password: user.password }).where({ id });
+        await knex("users").update({ name: user.name, email: user.email, password: user.password }).where({ "id": user_id });
 
         return response.status(200).json();
     }
 
     async delete(request, response) {
-        const { id } = request.params;
-        await knex("users").where({ id }).delete();
+        const user_id = request.user.id;
+        await knex("users").where({ "id": user_id }).delete();
         return response.status(200).json();
     }
 
