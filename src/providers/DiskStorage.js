@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const uploadConfig = require("../configs/upload");
-const { promises } = require("dns");
 
 class DiskStorage {
     async saveFile(file) {
