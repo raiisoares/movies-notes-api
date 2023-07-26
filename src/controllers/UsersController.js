@@ -7,10 +7,10 @@ class UsersController {
     async create(request, response) {
 
         const { name, email, password } = request.body;
-        const checkUserExiste = await knex.where({ "email": email }).table("users");
-        if (checkUserExiste === email) throw new AppError("Este email já está em uso.");
+        const [checkUserExiste] = await knex("users").where({ "email": email });
+        if (checkUserExiste) throw new AppError("Este email já está em uso.");
         const hashedPassword = await hash(password, 8);
-
+        
         await knex.insert({ name, email, password: hashedPassword }).into("users");
 
         return response.status(201).json();
