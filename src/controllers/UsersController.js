@@ -4,6 +4,7 @@ const knex = require("../database/knex");
 
 class UsersController {
 
+    //FIXME: Resolver a verificação de email.
     async create(request, response) {
 
         const { name, email, password } = request.body;
